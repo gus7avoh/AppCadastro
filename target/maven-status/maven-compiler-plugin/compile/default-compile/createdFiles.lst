@@ -1,0 +1,6 @@
+com\mycompany\appcadastro\FormCadastro.class
+com\mycompany\appcadastro\AppCadastro.class
+com\mycompany\appcadastro\MenuPrincipal.class
+com\mycompany\appcadastro\Usuario.class
+com\mycompany\appcadastro\FormListagem.class
+com\mycompany\appcadastro\MySQLRepository.class
