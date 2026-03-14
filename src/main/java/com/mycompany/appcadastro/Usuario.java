@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.appcadastro;
-
 /**
  *
  * @author Gustavo Henrique
@@ -14,9 +13,9 @@ public class Usuario {
     private String email;
     private String telefone;
     private String senha;
-    
+
     public Usuario(){}
-    
+
     public Usuario(int id, String nome, String email, String telefone, String senha) {
         this.id = id;
         this.nome = nome;
@@ -24,7 +23,7 @@ public class Usuario {
         this.telefone = telefone;
         this.senha = senha;
     }
-    
+
     public int getId(){ return id; }
     public void setId(int id) { this.id = id; }
     public String getNome() { return nome; }

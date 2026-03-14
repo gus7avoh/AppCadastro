@@ -25,13 +25,20 @@ public class MenuPrincipal extends JFrame {
 
         JButton btnListagem = new JButton("Listar Usuários");
         btnListagem.addActionListener(e -> new FormListagem().setVisible(true));
+        
+        JButton btnDelete = new JButton("Deletar Usuários");
+        btnDelete.addActionListener(e -> new DeleteUsuario().setVisible(true));
+        
+        JButton btnEditUser = new JButton("Editar Usuários");
+        btnEditUser.addActionListener(e -> new EditUser().setVisible(true));
 
         add(btnCadastro);
         add(btnListagem);
+        add(btnDelete);
+        add(btnEditUser);
     }
 
     public static void main(String[] args) {
-        // Inicializa a interface gráfica na thread correta do Swing
         SwingUtilities.invokeLater(() -> {
             new MenuPrincipal().setVisible(true);
         });

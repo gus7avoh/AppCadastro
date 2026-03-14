@@ -89,13 +89,15 @@ public class MySQLRepository {
         return lista;
     }
     
-    public boolean deletarUsuario(Usuario u){
-        String queryDelete =  "DELETE FROM app_db WHERE id = ?";
-        
+    public boolean deletarUsuario(int id, ArrayList<Usuario> usuarios){
+        if (validaId(id, usuarios) == false){
+            return false;
+        } 
+        String queryDelete =  "DELETE FROM usuarios WHERE id = ?";
         try{
-            PreparedStatement smt = connection.prepareStatement(queryDelete);
-            smt.setInt(1, u.getId());
-            smt.executeUpdate();
+            PreparedStatement psmt = connection.prepareStatement(queryDelete);
+            psmt.setInt(1, id);
+            psmt.executeUpdate();
             System.out.println("[INFO] - Usuario deletado");
             return true;
         }catch(SQLException e){
@@ -104,39 +106,71 @@ public class MySQLRepository {
         return false;
     }
     
-    public boolean atualizarUsuario(Usuario u, String nome, String email, String senha, String telefone){
-        String queryAtualizar = "UPDATE app_db SET"
-                + "nome  = ?,"
-                + "email = ?,"
-                + "telefone = ?,"
-                + "senha = ?"
-                + "WHERE id = ?";
-        
-        try{
-            PreparedStatement stm = connection.prepareStatement(queryAtualizar);
-            stm.setString(1, nome);
-            stm.setString(2, email);
-            stm.setString(3, telefone);
-            stm.setString(4, senha);
-            stm.setInt(5, u.getId());
-            stm.executeUpdate();
-            System.out.println("[INFO] - Usuario atualizado");
-            return true;
-        }catch(SQLException e){
-            System.out.println("[ERRO] - Não foi possivel atualizar o usuario: " + e);
+    public boolean atualizarUsuario(int id, ArrayList<Usuario> usuarios, String nome, String email, String senha, String telefone) {
+        if (!validaId(id, usuarios)) {
+            return false;
         }
+
+        StringBuilder queryAtualizar = new StringBuilder("UPDATE usuarios SET ");
+        List<String> campos = new ArrayList<>();
+        List<Object> valores = new ArrayList<>();
+
+        if (nome != null && !nome.isEmpty()) {
+            campos.add("nome = ?");
+            valores.add(nome);
+        }
+        if (email != null && !email.isEmpty()) {
+            campos.add("email = ?");
+            valores.add(email);
+        }
+        if (telefone != null && !telefone.isEmpty()) {
+            campos.add("telefone = ?");
+            valores.add(telefone);
+        }
+        if (senha != null && !senha.isEmpty()) {
+            campos.add("senha = ?");
+            valores.add(senha);
+        }
+
+        if (campos.isEmpty()) {
+            System.out.println("[AVISO] - Nenhum campo para atualizar.");
+            return false;
+        }
+
+        queryAtualizar.append(String.join(", ", campos));
+        queryAtualizar.append(" WHERE id = ?");
+        valores.add(id);
+
+        try {
+            PreparedStatement stm = connection.prepareStatement(queryAtualizar.toString());
+
+            for (int i = 0; i < valores.size(); i++) {
+                stm.setObject(i + 1, valores.get(i));
+            }
+
+            stm.executeUpdate();
+            System.out.println("[INFO] - Usuário atualizado.");
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("[ERRO] - Não foi possível atualizar o usuário: " + e);
+        }
+
         return false;
     }
         
-    public boolean atualizarParametro(Usuario u, String parametro, String valor){
-        String queryAtualizar = "UPDATE app_db SET"
-                + "? = ?"
+    public boolean atualizarParametro(int id, String parametro, String valor, ArrayList<Usuario> usuarios){
+        if (validaId(id, usuarios) == false){
+            return false;
+        } 
+        String queryAtualizar = "UPDATE usuarios SET "
+                + "? = ? "
                 + "WHERE id = ?";
         try{
             PreparedStatement stm = connection.prepareStatement(queryAtualizar);
             stm.setString(1, parametro);
             stm.setString(2, valor);
-            stm.setInt(5, u.getId());
+            stm.setInt(5, id);
             stm.executeUpdate();
             System.out.println("[INFO] - Parametro "+ parametro +" atualizado");
             return true;
@@ -146,4 +180,17 @@ public class MySQLRepository {
         return false;
     }
     
+    boolean validaId(int id, ArrayList<Usuario> usuarios){
+        boolean idValido = false;
+        for (Usuario u : usuarios) {
+            if (u.getId() == id){
+                idValido = true;
+            }
+        }
+        if (!idValido){
+            System.out.println("[ERRO] - ID do usuario não é valido");
+            return false;
+        }
+        return true;
+    }
 }
